@@ -1,0 +1,27 @@
+# Universo de Morningstar. FOESP$$ALL = fondos España.
+universe: "FOESP$$ALL"
+language: "es-ES"
+currency: "EUR"
+
+# Solo fondos con rating, para no traer 50.000 fichas sin estrellas.
+filters: "StarRatingM255:IN:1,2,3,4,5"
+
+data_points:
+  - SecId
+  - ISIN
+  - LegalName
+  - CategoryName
+  - StarRatingM255
+  - MorningstarRiskM255
+  - PriceCurrency
+
+page_size: 50
+sleep_between_pages: [2, 5]
+max_pages: 1500
+
+output: "data/ratings.json"
+
+# Ajusta tras la primera ejecución con ±30% sobre el número real.
+min_total: 500
+max_total: 30000
+min_rated_ratio: 0.9
