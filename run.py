@@ -16,6 +16,8 @@ CFG = yaml.safe_load((ROOT / "config.yaml").read_text())
 GOLDEN = ROOT / "golden.json"
 OUT = ROOT / CFG["output"]
 
+AVISO = "Datos de Morningstar con fines informativos, no reproduccion integra."
+
 
 def leer_golden():
     if GOLDEN.exists():
@@ -37,6 +39,7 @@ def escribir(fondos):
     payload = {
         "actualizado": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "fuente": "Morningstar",
+        "aviso": AVISO,
         "fondos": fondos,
     }
     texto = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
