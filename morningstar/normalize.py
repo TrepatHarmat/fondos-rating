@@ -4,7 +4,9 @@ def build(rows):
         secid = r.get("SecId")
         if not secid:
             continue
-        out[secid] = {
+        # Clave por ISIN: colapsa las clases del mismo fondo en una ficha.
+        key = r.get("ISIN") or secid
+        out[key] = {
             "secId": secid,
             "isin": r.get("ISIN"),
             "name": r.get("LegalName"),
