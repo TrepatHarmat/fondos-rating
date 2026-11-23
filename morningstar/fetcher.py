@@ -1,10 +1,11 @@
 import math
 import random
 import time
+from urllib.parse import urlencode
 
 from curl_cffi import requests as creq
 
-INSTANCES = ["klr5zyak8x", "9vehuxllxs"]
+INSTANCES = ["9vehuxllxs"]
 
 HEADERS = {
     "Accept": "application/json, text/plain, */*",
@@ -25,10 +26,11 @@ def _session():
 
 
 def _page(session, instance, params, attempts=6):
-    url = f"https://lt.morningstar.com/api/rest.svc/{instance}/security/screener"
+    qs = urlencode(params, safe="$|:")
+    url = f"https://lt.morningstar.com/api/rest.svc/{instance}/security/screener?{qs}"
     last = None
     for i in range(attempts):
-        r = session.get(url, params=params, timeout=(5, 25))
+        r = session.get(url, timeout=(5, 25))
         last = r.status_code
         if r.status_code == 200 and "json" in r.headers.get("content-type", ""):
             return r.json()
@@ -60,8 +62,9 @@ def collect(cfg, log=print):
         try:
             data = _page(session, instance, params)
         except FetchError:
-            instance = INSTANCES[1] if instance == INSTANCES[0] else INSTANCES[0]
-            session = _session()
+            if len(INSTANCES) > 1:
+                instance = INSTANCES[1] if instance == INSTANCES[0] else INSTANCES[0]
+                session = _session()
             data = _page(session, instance, params)
 
         if total is None:
