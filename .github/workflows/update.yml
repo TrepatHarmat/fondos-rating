@@ -1,0 +1,25 @@
+name: update
+on:
+  schedule:
+    - cron: "0 4 1 * *"
+  workflow_dispatch:
+concurrency: update
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: python run.py
+      - run: |
+          git config user.name  "bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add data/ratings.json golden.json
+          git commit -m "actualiza ratings $(date -u +%F)" || exit 0
+          git push
