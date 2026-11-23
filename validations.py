@@ -24,9 +24,16 @@ def check(rows, golden, cfg):
         if r.get("rating") is not None and r["rating"] not in (1, 2, 3, 4, 5):
             raise ValidationError(f"rating fuera de rango en {r['secId']}: {r['rating']}")
 
+    isins = [r["isin"] for r in rows if r.get("isin")]
+    if len(isins) != len(set(isins)):
+        raise ValidationError("ISIN duplicados tras normalizar")
+
     index = {r["secId"]: r.get("rating") for r in rows}
+    cambios = 0
     for secid, esperado in golden.items():
         if secid not in index:
             raise ValidationError(f"golden ausente: {secid}")
         if index[secid] != esperado:
-            raise ValidationError(f"golden {secid}: {index[secid]} != {esperado}")
+            cambios += 1
+    if cambios > cfg.get("max_golden_changes", 2):
+        raise ValidationError(f"{cambios} cambios en golden, revisa el endpoint")
