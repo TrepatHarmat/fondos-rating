@@ -3,8 +3,8 @@ universe: "FOESP$$ALL"
 language: "es-ES"
 currency: "EUR"
 
-# Solo fondos con rating, para no traer 50.000 fichas sin estrellas.
-filters: "StarRatingM255:IN:1,2,3,4,5"
+# GT:0 = solo fondos con alguna estrella. Excluye los no valorados.
+filters: "StarRatingM255:GT:0"
 
 data_points:
   - SecId
@@ -15,13 +15,14 @@ data_points:
   - MorningstarRiskM255
   - PriceCurrency
 
-page_size: 50
+page_size: 500
 sleep_between_pages: [2, 5]
-max_pages: 1500
+max_pages: 120
 
 output: "data/ratings.json"
 
-# Ajusta tras la primera ejecución con ±30% sobre el número real.
-min_total: 500
-max_total: 30000
-min_rated_ratio: 0.9
+# Tras deduplicar por ISIN el volumen baja: margen amplio sobre lo real.
+min_total: 15000
+max_total: 45000
+min_rated_ratio: 0.95
+max_golden_changes: 2
